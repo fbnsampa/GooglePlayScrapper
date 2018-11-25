@@ -7,10 +7,7 @@
 
 import scrapy
 
-
-class GooglePlayScrapperItem(scrapy.Item):
-    # define the fields for your item here like:
-    # name = scrapy.Field()
+class gpsItem(scrapy.Item):
     app_id = scrapy.Field()
     app_name = scrapy.Field()
     author = scrapy.Field()

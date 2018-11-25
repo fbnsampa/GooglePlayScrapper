@@ -17,7 +17,7 @@ CONCURRENT_REQUESTS_PER_DOMAIN = 16
 # Configure item pipelines
 # See https://doc.scrapy.org/en/latest/topics/item-pipeline.html
 ITEM_PIPELINES = {
-    'GooglePlayScrapper.pipelines.GooglePlayScrapperPipeline': 300,
+    'GooglePlayScrapper.pipelines.gpsPipeline': 300,
 }
 
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
