@@ -6,7 +6,7 @@
 # See: https://doc.scrapy.org/en/latest/topics/item-pipeline.html
 import psycopg2
 
-class GooglePlayScrapperPipeline(object):
+class gpsPipeline(object):
     def __init__(self):  
         self.conn = psycopg2.connect("dbname='gplay' user='postgres' host='localhost' password='root'")
         
