@@ -25,21 +25,32 @@ class gpsSpider(scrapy.Spider):
 
     def parse(self, response):
         self.log("Starting scan of " + response.url)
-
         item = gpsItem()
         atributes = response.xpath('//*[@class="BgcNfc"]/text()').extract()
         values = response.xpath('//*[@class="htlgb"]/text()').extract()
-        translate = {"Offered By":"author","Installs":"downloads","In-app Products":"price","Updated":"updated",
-                     "Current Version":"app_version", "Requires Android":"compability","Size":"filesize"}
+        translate = {"Offered By":"author",
+                     "Installs":"downloads",
+                     "In-app Products":"app_products",
+                     "Updated":"updated",
+                     "Current Version":"app_version",
+                     "Requires Android":"compability",
+                     "Size":"filesize"}
         ignore = {"Permissions", "Report", "Developer", "Content Rating"}
-
         item["app_id"] = response.url.split("?id=")[-1]
         item["app_name"] = response.xpath('//*[@itemprop="name"]/span/text()')[0].extract()
         item["genre"] = response.xpath('//*[@itemprop="genre"]/text()')[0].extract()
         item["description"] = response.xpath('//*[@jsname="sngebd"]//text()').extract()
         item["reviews"] = response.xpath('//*[@class="AYi5wd TBRnV"]/span/text()')[0].extract()
         item["rating"] = response.xpath('//div[@class="BHMmbe"]/text()').extract_first()
-        item["price"] = "null"
+        item["app_products"] = "none"
+        aux = response.xpath('//span[@class="oocvOe"]/button[@aria-label]/text()')[0].extract()
+        if (aux == "Install"):
+            item["price"] = "0.0"
+        else:
+            item["price"] = aux
+
+
+
 
         i = 0
         for atribute in atributes:

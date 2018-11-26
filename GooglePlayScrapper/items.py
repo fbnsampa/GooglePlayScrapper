@@ -17,6 +17,7 @@ class gpsItem(scrapy.Item):
     reviews = scrapy.Field()
     rating = scrapy.Field()
     price = scrapy.Field()
+    app_products = scrapy.Field()
     app_version = scrapy.Field()
     compability = scrapy.Field()
     filesize = scrapy.Field()
