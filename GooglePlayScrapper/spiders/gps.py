@@ -11,32 +11,44 @@ class gpsSpider(scrapy.Spider):
     ids = file.readlines()
     file.close()
 
+    # start_urls = [
+    #     # 'https://play.google.com/store/apps/details?id=info.intrasoft.habitgoaltracker',
+    #     # 'https://play.google.com/store/apps/details?id=org.isoron.uhabits',
+    #     # 'https://play.google.com/store/apps/details?id=com.SoftGamesInc.DaysSurvivalForest',
+    #     # 'https://play.google.com/store/apps/details?id=com.oristats.habitbull'
+    #     'https://play.google.com/store/apps/details?id=air.com.essig.spielplatz2lite'
+    # ]
+
     for id in ids:
         url = prefix + id.strip()
         start_urls.append(url)
 
     def parse(self, response):
         self.log("Starting scan of " + response.url)
+
         item = gpsItem()
-        infos = response.xpath('//*[@class="htlgb"]/text()')
+        atributes = response.xpath('//*[@class="BgcNfc"]/text()').extract()
+        values = response.xpath('//*[@class="htlgb"]/text()').extract()
+        translate = {"Offered By":"author","Installs":"downloads","In-app Products":"price","Updated":"updated",
+                     "Current Version":"app_version", "Requires Android":"compability","Size":"filesize"}
+        ignore = {"Permissions", "Report", "Developer", "Content Rating"}
+
         item["app_id"] = response.url.split("?id=")[-1]
         item["app_name"] = response.xpath('//*[@itemprop="name"]/span/text()')[0].extract()
-        item["author"] = infos[-1].extract()
         item["genre"] = response.xpath('//*[@itemprop="genre"]/text()')[0].extract()
         item["description"] = response.xpath('//*[@jsname="sngebd"]//text()').extract()
-        item["downloads"] = infos[2].extract()
         item["reviews"] = response.xpath('//*[@class="AYi5wd TBRnV"]/span/text()')[0].extract()
         item["rating"] = response.xpath('//div[@class="BHMmbe"]/text()').extract_first()
-        if len(infos) > 6:
-            item["price"] = infos[6].extract()
-        else:
-            item["price"] = '0.0'
-        item["app_version"] = infos[3].extract()
-        item["compability"] = infos[4].extract()
-        item["filesize"] = infos[1].extract()
-        item["updated"] = infos[0].extract()
+        item["price"] = "null"
+
+        i = 0
+        for atribute in atributes:
+            if translate.has_key(atribute):
+                item[translate[atribute]] = values[i]
+            if not ignore.__contains__(atribute):
+                i = i+1
+
         self.log("Finishing scan of " + response.url)
-        
         return item
 
 
