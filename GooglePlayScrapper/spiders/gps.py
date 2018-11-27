@@ -10,18 +10,20 @@ class gpsSpider(scrapy.Spider):
     file = open("apps_id.txt", "r")
     ids = file.readlines()
     file.close()
+    for id in ids:
+        url = prefix + id.strip()
+        start_urls.append(url)
 
     # start_urls = [
     #     # 'https://play.google.com/store/apps/details?id=info.intrasoft.habitgoaltracker',
     #     # 'https://play.google.com/store/apps/details?id=org.isoron.uhabits',
     #     # 'https://play.google.com/store/apps/details?id=com.SoftGamesInc.DaysSurvivalForest',
     #     # 'https://play.google.com/store/apps/details?id=com.oristats.habitbull'
-    #     'https://play.google.com/store/apps/details?id=air.com.essig.spielplatz2lite'
+    #     # 'https://play.google.com/store/apps/details?id=air.com.essig.spielplatz2lite'
+    #     # 'https://play.google.com/store/apps/details?id=com.gameloft.android.ANMP.GloftASHM'
+    #     # 'http://localhost/GooglePlayScrapper/tetas.html'
     # ]
 
-    for id in ids:
-        url = prefix + id.strip()
-        start_urls.append(url)
 
     def parse(self, response):
         self.log("Starting scan of " + response.url)
@@ -35,7 +37,7 @@ class gpsSpider(scrapy.Spider):
                      "Current Version":"app_version",
                      "Requires Android":"compability",
                      "Size":"filesize"}
-        ignore = {"Permissions", "Report", "Developer", "Content Rating"}
+        ignore = {"Permissions", "Report", "Developer", "Content Rating", "Eligible for Family Library"}
         item["app_id"] = response.url.split("?id=")[-1]
         item["app_name"] = response.xpath('//*[@itemprop="name"]/span/text()')[0].extract()
         item["genre"] = response.xpath('//*[@itemprop="genre"]/text()')[0].extract()
@@ -49,9 +51,6 @@ class gpsSpider(scrapy.Spider):
         else:
             item["price"] = aux
 
-
-
-
         i = 0
         for atribute in atributes:
             if translate.has_key(atribute):
@@ -61,7 +60,3 @@ class gpsSpider(scrapy.Spider):
 
         self.log("Finishing scan of " + response.url)
         return item
-
-
-
-
